@@ -1,3 +1,7 @@
 {
-  "liveServer.settings.ignoreFiles": ["**/*.json", "*.json"]
+  "liveServer.settings.ignoreFiles": [
+    "**/*.json",
+    "*.json"
+  ],
+  "liveServer.settings.port": 5501
 }
