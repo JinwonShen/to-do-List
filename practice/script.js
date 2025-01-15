@@ -8,11 +8,70 @@
   const $todos = get(".todos");
   const $form = get(".todo_form");
   const $todoInput = get(".todo_input");
+  const $pagination = get(".pagination");
   const API_URL = `http://localhost:3000/todos`;
 
+  // 한 번에 보여질 리스트 갯수
   const limit = 5;
+  // 첫 번째 페이지 default / 현재 페이지
   let currentPage = 1;
-  // 첫 번째 페이지 default
+
+  // 최대 페이지 수
+  const totalCount = 51;
+  // 한 번에 보여질 페이지 수
+  const pageCount = 5;
+
+  const pagination = () => {
+    let totalPage = Math.ceil(totalCount / limit);
+    let pageGroup = Math.ceil(currentPage / pageCount);
+
+    let lastNumber = pageGroup * pageCount;
+    if (lastNumber > totalPage) {
+      lastNumber = totalPage;
+    }
+    let firstNumber = lastNumber - (pageCount - 1);
+
+    const next = lastNumber + 1;
+    const prev = firstNumber - 1;
+
+    let html = "";
+
+    // 이전 버튼 노출
+    if (prev > 0) {
+      html += `<button class="prev" data-fn="prev">이전</button>`;
+    }
+
+    // 페이지 넘버 노출
+    for (let i = firstNumber; i <= lastNumber; i++) {
+      html += `<button class="page-number" id="page_${i}">${i}</button>`;
+    }
+
+    // 다음 버튼 노출
+    if (lastNumber < totalPage) {
+      html += `<button class="next" data-fn="next">다음</button>`;
+    }
+
+    $pagination.innerHTML = html;
+
+    // 현재 페이지
+    const $currentPageNumber = get(`.page-number#page_${currentPage}`);
+    $currentPageNumber.style.color = "#9dc0e8";
+
+    const $currentPageNumbers = document.querySelectorAll(".pagination button");
+    $currentPageNumbers.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.dataset.fn === "prev") {
+          currentPage = prev;
+        } else if (button.dataset.fn === "next") {
+          currentPage = next;
+        } else {
+          currentPage = button.innerText;
+        }
+        pagination();
+        getTodos();
+      });
+    });
+  };
 
   const createTodoElement = (item) => {
     const { id, content, completed } = item;
@@ -166,6 +225,7 @@
   const init = () => {
     window.addEventListener("DOMContentLoaded", () => {
       getTodos();
+      pagination();
     });
 
     $form.addEventListener("submit", addTodo);
